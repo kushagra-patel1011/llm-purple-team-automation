@@ -3,28 +3,32 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Purple Team Framework — Kushagra Patel</title>
+<title>Purple Team Framework</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:         #0f1117;
-    --surface:    #1a1d27;
-    --surface2:   #22263a;
-    --border:     #2e3352;
-    --border2:    #3d4468;
-    --accent:     #6366f1;
-    --accent-dim: #4f52c5;
-    --green:      #22c55e;
-    --yellow:     #eab308;
-    --red:        #ef4444;
-    --blue:       #3b82f6;
-    --text:       #e2e8f0;
-    --text-2:     #94a3b8;
-    --text-3:     #475569;
-    --mono:       'JetBrains Mono', monospace;
-    --sans:       'Inter', sans-serif;
+    --bg:          #08090d;
+    --bg2:         #0d0f18;
+    --surface:     #111420;
+    --surface2:    #181c2e;
+    --border:      #1e2338;
+    --border2:     #2a3050;
+    --accent:      #00d4ff;
+    --accent2:     #7c3aed;
+    --accent3:     #f97316;
+    --green:       #10b981;
+    --yellow:      #f59e0b;
+    --red:         #ef4444;
+    --blue:        #3b82f6;
+    --text:        #e8eaf6;
+    --text2:       #8892b0;
+    --text3:       #3d4a6b;
+    --mono:        'JetBrains Mono', monospace;
+    --sans:        'Inter', sans-serif;
+    --glow:        0 0 20px rgba(0, 212, 255, 0.15);
+    --glow2:       0 0 40px rgba(0, 212, 255, 0.08);
   }
 
   body {
@@ -33,103 +37,143 @@
     font-family: var(--sans);
     font-size: 14px;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
-  /* ── TOP NAV ── */
+  /* grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
   nav {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 100;
+    height: 60px;
+    background: rgba(8,9,13,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
   }
 
   .nav-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   .nav-logo {
-    width: 32px; height: 32px;
-    background: var(--accent);
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 13px; color: #fff;
-    flex-shrink: 0;
-  }
-
-  .nav-title {
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--text);
-  }
-
-  .nav-subtitle {
-    font-size: 11px;
-    color: var(--text-2);
     font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(0,212,255,0.3);
+  }
+
+  .nav-brand {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .nav-brand span {
+    color: var(--accent);
+  }
+
+  .nav-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    margin-top: 1px;
   }
 
   .nav-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
   }
 
   .api-status {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-2);
+    gap: 7px;
     font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 20px;
   }
 
   .dot {
-    width: 7px; height: 7px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse-dot 2s infinite;
   }
 
-  .dot.offline { background: var(--red); }
+  .dot.offline {
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+    animation: none;
+  }
 
-  .nav-info {
-    font-size: 12px;
-    color: var(--text-3);
-    font-family: var(--mono);
-    text-align: right;
-    line-height: 1.6;
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 
   /* ── LAYOUT ── */
   .layout {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    min-height: calc(100vh - 56px);
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 60px);
+    position: relative;
+    z-index: 1;
   }
 
   /* ── SIDEBAR ── */
   aside {
-    background: var(--surface);
+    background: var(--bg2);
     border-right: 1px solid var(--border);
-    padding: 20px 16px;
+    padding: 20px 14px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
   }
 
-  .sidebar-section-title {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-3);
+  .section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text3);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
     margin-bottom: 10px;
   }
 
@@ -137,7 +181,7 @@
   .tech-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
   }
 
   .tech-card {
@@ -145,8 +189,21 @@
     border-radius: 6px;
     border: 1px solid var(--border);
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    background: var(--bg);
+    background: var(--surface);
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tech-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transition: transform 0.15s;
+    border-radius: 0 2px 2px 0;
   }
 
   .tech-card:hover {
@@ -154,63 +211,67 @@
     background: var(--surface2);
   }
 
+  .tech-card:hover::before { transform: scaleY(0.5); opacity: 0.5; }
+
   .tech-card.selected {
-    border-color: var(--accent);
-    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(0,212,255,0.3);
+    background: rgba(0,212,255,0.05);
   }
 
-  .tech-card-top {
+  .tech-card.selected::before { transform: scaleY(1); }
+
+  .tech-top {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 3px;
+    align-items: center;
+    margin-bottom: 4px;
   }
 
-  .tech-id-tag {
+  .tid {
     font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    background: rgba(99,102,241,0.12);
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-
-  .tactic-tag {
     font-size: 10px;
-    color: var(--text-3);
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,212,255,0.15);
   }
 
-  .tech-name {
-    font-size: 13px;
-    font-weight: 500;
+  .tactic {
+    font-size: 9px;
+    font-family: var(--mono);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .tname {
+    font-size: 12px;
+    font-weight: 600;
     color: var(--text);
   }
 
-  /* Log count control */
-  .control-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  /* Slider */
+  .control-row { display: flex; flex-direction: column; gap: 8px; }
 
   .control-label {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: var(--text-2);
+    color: var(--text2);
   }
 
-  .control-label span {
+  .control-label strong {
     font-family: var(--mono);
     color: var(--accent);
-    font-weight: 600;
+    font-size: 13px;
   }
 
   input[type=range] {
     -webkit-appearance: none;
     width: 100%;
-    height: 4px;
-    background: var(--border);
+    height: 3px;
+    background: var(--border2);
     border-radius: 2px;
     outline: none;
     cursor: pointer;
@@ -222,35 +283,44 @@
     background: var(--accent);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    box-shadow: 0 0 8px rgba(0,212,255,0.5);
   }
 
   /* Run button */
   .run-btn {
     width: 100%;
-    padding: 10px;
-    background: var(--accent);
+    padding: 11px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
     border: none;
     border-radius: 6px;
     color: #fff;
     font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.15s, opacity 0.15s;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.2);
+    position: relative;
+    overflow: hidden;
   }
 
-  .run-btn:hover { background: var(--accent-dim); }
-  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .run-btn.loading { opacity: 0.8; }
-
-  /* Pipeline stages in sidebar */
-  .stage-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  .run-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+    opacity: 0;
+    transition: opacity 0.2s;
   }
+
+  .run-btn:hover::after { opacity: 1; }
+  .run-btn:hover { box-shadow: 0 4px 28px rgba(0,212,255,0.35); transform: translateY(-1px); }
+  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* Pipeline stages */
+  .stage-list { display: flex; flex-direction: column; gap: 3px; }
 
   .stage-item {
     display: flex;
@@ -261,149 +331,144 @@
     transition: background 0.15s;
   }
 
-  .stage-item.active  { background: rgba(99,102,241,0.1); }
-  .stage-item.done    { background: rgba(34,197,94,0.07); }
+  .stage-item.active  { background: rgba(0,212,255,0.06); }
+  .stage-item.done    { background: rgba(16,185,129,0.06); }
 
-  .stage-icon {
+  .stage-num {
     width: 22px; height: 22px;
     border-radius: 50%;
-    border: 2px solid var(--border2);
+    border: 1.5px solid var(--border2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 10px;
-    color: var(--text-3);
-    flex-shrink: 0;
     font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    flex-shrink: 0;
     transition: all 0.2s;
   }
 
-  .stage-item.active .stage-icon {
+  .stage-item.active .stage-num {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(99,102,241,0.15);
+    box-shadow: 0 0 8px rgba(0,212,255,0.3);
   }
 
-  .stage-item.done .stage-icon {
+  .stage-item.done .stage-num {
     border-color: var(--green);
     color: var(--green);
-    background: rgba(34,197,94,0.1);
+    background: rgba(16,185,129,0.1);
   }
 
-  .stage-label {
-    flex: 1;
-  }
+  .stage-info { flex: 1; }
+  .sname { font-size: 12px; font-weight: 600; color: var(--text); }
+  .sdesc { font-family: var(--mono); font-size: 10px; color: var(--text3); }
 
-  .stage-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .stage-desc {
-    font-size: 11px;
-    color: var(--text-3);
+  .sstatus {
     font-family: var(--mono);
-  }
-
-  .stage-status {
     font-size: 10px;
-    font-family: var(--mono);
   }
+  .sstatus.waiting  { color: var(--text3); }
+  .sstatus.running  { color: var(--yellow); }
+  .sstatus.complete { color: var(--green); }
 
-  .stage-status.waiting  { color: var(--text-3); }
-  .stage-status.running  { color: var(--yellow); }
-  .stage-status.complete { color: var(--green); }
+  .divider { height: 1px; background: var(--border); margin: 0 -14px; }
 
-  /* ── MAIN CONTENT ── */
+  /* ── MAIN ── */
   main {
     padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
     overflow-y: auto;
+    position: relative;
   }
 
-  /* Error box */
-  .error-box {
-    background: rgba(239,68,68,0.08);
-    border: 1px solid rgba(239,68,68,0.3);
-    border-radius: 6px;
-    padding: 12px 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--red);
-  }
-
-  /* Loading bar */
-  .loading-bar {
+  /* loading bar */
+  .progress-bar {
     height: 2px;
     background: var(--border);
     border-radius: 1px;
     overflow: hidden;
-    margin-bottom: -16px;
+    margin-bottom: -12px;
   }
 
-  .loading-bar-fill {
+  .progress-fill {
     height: 100%;
-    background: var(--accent);
-    animation: load-slide 1.4s ease-in-out infinite;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    animation: slide 1.4s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--accent);
   }
 
-  @keyframes load-slide {
-    0%   { transform: translateX(-100%) scaleX(0.5); }
-    50%  { transform: translateX(0%)    scaleX(1); }
-    100% { transform: translateX(100%)  scaleX(0.5); }
+  @keyframes slide {
+    0%   { transform: translateX(-100%) scaleX(0.4); }
+    50%  { transform: translateX(0%) scaleX(1); }
+    100% { transform: translateX(100%) scaleX(0.4); }
+  }
+
+  /* error */
+  .err-box {
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #fca5a5;
+    border-left: 3px solid var(--red);
   }
 
   /* ── CARDS ── */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
+    transition: border-color 0.2s;
   }
 
-  .card-header {
-    padding: 14px 18px;
+  .card:hover { border-color: var(--border2); }
+
+  .card-head {
+    padding: 13px 18px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(255,255,255,0.01);
   }
 
   .card-title {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text);
     display: flex;
     align-items: center;
     gap: 8px;
+    letter-spacing: 0.01em;
   }
 
-  .card-badge {
+  .badge {
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9px;
     padding: 2px 7px;
-    border-radius: 4px;
+    border-radius: 3px;
     background: var(--surface2);
-    color: var(--text-2);
-    border: 1px solid var(--border);
+    color: var(--text2);
+    border: 1px solid var(--border2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
-  .card-body {
-    padding: 16px 18px;
-  }
+  .badge.red   { color: #f87171; border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.06); }
+  .badge.blue  { color: var(--accent); border-color: rgba(0,212,255,0.2); background: rgba(0,212,255,0.06); }
+  .badge.green { color: var(--green); border-color: rgba(16,185,129,0.2); background: rgba(16,185,129,0.06); }
 
-  /* ── RESULTS GRID ── */
-  .results-grid {
+  .card-body { padding: 16px 18px; }
+
+  /* 2-col grid */
+  .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  @media (max-width: 1000px) {
-    .layout { grid-template-columns: 1fr; }
-    aside { border-right: none; border-bottom: 1px solid var(--border); }
-    .results-grid { grid-template-columns: 1fr; }
+    gap: 18px;
   }
 
   /* ── LOG TABLE ── */
@@ -411,382 +476,499 @@
     width: 100%;
     border-collapse: collapse;
     font-family: var(--mono);
-    font-size: 11.5px;
+    font-size: 11px;
   }
 
   .log-table th {
     text-align: left;
     padding: 7px 10px;
     background: var(--surface2);
-    color: var(--text-3);
-    font-weight: 500;
-    font-size: 10px;
+    color: var(--text3);
+    font-size: 9px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     border-bottom: 1px solid var(--border);
+    font-weight: 700;
   }
 
   .log-table td {
     padding: 7px 10px;
-    border-bottom: 1px solid rgba(46,51,82,0.5);
-    color: var(--text-2);
-    max-width: 180px;
+    border-bottom: 1px solid rgba(30,35,56,0.6);
+    color: var(--text2);
+    max-width: 160px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .log-table tr:last-child td { border-bottom: none; }
-  .log-table tr:hover td { background: rgba(99,102,241,0.04); }
+  .log-table tr:hover td { background: rgba(0,212,255,0.03); color: var(--text); }
 
-  .evid-badge {
+  .evid {
     display: inline-block;
     padding: 2px 6px;
-    background: rgba(59,130,246,0.12);
+    font-size: 10px;
+    background: rgba(59,130,246,0.1);
     color: var(--blue);
     border-radius: 3px;
-    font-size: 10px;
     border: 1px solid rgba(59,130,246,0.2);
   }
 
-  /* ── COVERAGE SECTION ── */
-  .coverage-wrap {
+  /* ── COVERAGE ── */
+  .cov-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    padding: 20px 0;
+    gap: 12px;
+    padding: 16px 0 8px;
   }
 
-  .score-ring { position: relative; width: 130px; height: 130px; }
-  .score-ring svg { transform: rotate(-90deg); }
-  .score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 9; }
-  .score-ring-fg {
-    fill: none; stroke-width: 9; stroke-linecap: round;
-    transition: stroke-dashoffset 1s ease, stroke 0.5s;
+  .ring-wrap { position: relative; width: 130px; height: 130px; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--surface2); stroke-width: 8; }
+  .ring-fg {
+    fill: none; stroke-width: 8; stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1), stroke 0.4s;
   }
 
-  .score-num {
+  .ring-text {
     position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 26px;
+    transform: translate(-50%,-50%);
+    text-align: center;
+  }
+
+  .ring-pct {
+    font-family: var(--mono);
+    font-size: 28px;
     font-weight: 700;
     color: var(--text);
-    text-align: center;
     line-height: 1;
-    font-family: var(--mono);
   }
 
-  .score-num small {
-    display: block;
-    font-size: 9px;
-    font-weight: 400;
-    color: var(--text-3);
+  .ring-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     margin-top: 3px;
-    letter-spacing: 0.08em;
   }
 
   .status-pill {
-    padding: 5px 20px;
+    padding: 5px 22px;
     border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
     font-family: var(--mono);
-    letter-spacing: 0.06em;
-  }
-
-  .status-pill.PASS { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
-  .status-pill.WARN { background: rgba(234,179,8,0.12);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.3); }
-  .status-pill.FAIL { background: rgba(239,68,68,0.12);  color: var(--red);   border: 1px solid rgba(239,68,68,0.3); }
-
-  .match-text {
     font-size: 12px;
-    color: var(--text-2);
-    font-family: var(--mono);
-    text-align: center;
-    line-height: 1.7;
+    font-weight: 700;
+    letter-spacing: 0.1em;
   }
 
-  .match-text b { color: var(--text); }
+  .status-pill.PASS { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.25); box-shadow: 0 0 12px rgba(16,185,129,0.1); }
+  .status-pill.WARN { background: rgba(245,158,11,0.1);  color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+  .status-pill.FAIL { background: rgba(239,68,68,0.1);   color: var(--red);    border: 1px solid rgba(239,68,68,0.25); }
 
-  /* ── VALIDATION DETAILS ── */
-  .val-list { display: flex; flex-direction: column; }
+  .match-stat {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  .match-stat b { color: var(--text); }
+
+  /* val list */
+  .val-list { display: flex; flex-direction: column; margin-top: 4px; }
 
   .val-row {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    padding: 7px 0;
-    border-bottom: 1px solid rgba(46,51,82,0.4);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(30,35,56,0.5);
     font-family: var(--mono);
     font-size: 11px;
   }
 
   .val-row:last-child { border-bottom: none; }
-
-  .val-icon { flex-shrink: 0; margin-top: 1px; }
-  .val-logid { color: var(--text-3); flex-shrink: 0; width: 75px; }
+  .val-icon { flex-shrink: 0; }
+  .val-lid { color: var(--text3); width: 72px; flex-shrink: 0; }
   .val-reason { flex: 1; }
   .val-reason.matched { color: var(--green); }
   .val-reason.missed  { color: #f87171; }
 
-  /* ── SIGMA BLOCK ── */
+  /* ── SIGMA ── */
   .sigma-block {
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 14px 16px;
     font-family: var(--mono);
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--text-2);
-    overflow-x: auto;
+    font-size: 11.5px;
+    line-height: 1.75;
+    color: var(--text2);
+    overflow: auto;
     white-space: pre;
-    max-height: 300px;
-    overflow-y: auto;
+    max-height: 320px;
+    border-left: 3px solid rgba(0,212,255,0.3);
   }
 
   .sigma-block .key     { color: #7dd3fc; }
   .sigma-block .val     { color: var(--green); }
   .sigma-block .str     { color: #fcd34d; }
-  .sigma-block .comment { color: var(--text-3); }
+  .sigma-block .comment { color: var(--text3); }
 
-  /* ── TOKEN INFO ── */
-  .token-row {
+  .sigma-meta {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     padding-top: 10px;
     margin-top: 10px;
     border-top: 1px solid var(--border);
     font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-3);
-    flex-wrap: wrap;
+    font-size: 10px;
+    color: var(--text3);
   }
 
-  .token-row span { color: var(--text-2); }
+  .sigma-meta span { color: var(--text2); }
 
-  /* ── HISTORY TABLE ── */
-  .history-row {
+  /* ── HISTORY ── */
+  .hist-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(46,51,82,0.35);
+    gap: 10px;
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(30,35,56,0.4);
     font-family: var(--mono);
-    font-size: 11.5px;
+    font-size: 11px;
     cursor: pointer;
-    transition: background 0.1s;
     border-radius: 4px;
-    padding-left: 4px;
+    transition: background 0.1s;
   }
 
-  .history-row:last-child { border-bottom: none; }
-  .history-row:hover { background: var(--surface2); }
+  .hist-row:last-child { border-bottom: none; }
+  .hist-row:hover { background: var(--surface2); }
 
-  .hist-status {
-    width: 38px;
+  .h-status {
     font-size: 10px;
-    font-weight: 600;
-    padding: 2px 5px;
+    font-weight: 700;
+    padding: 2px 6px;
     border-radius: 3px;
+    width: 38px;
     text-align: center;
   }
 
-  .hist-status.PASS { background: rgba(34,197,94,0.12); color: var(--green); }
-  .hist-status.WARN { background: rgba(234,179,8,0.12);  color: var(--yellow); }
-  .hist-status.FAIL { background: rgba(239,68,68,0.12);  color: var(--red); }
+  .h-status.PASS { background: rgba(16,185,129,0.1); color: var(--green); }
+  .h-status.WARN { background: rgba(245,158,11,0.1);  color: var(--yellow); }
+  .h-status.FAIL { background: rgba(239,68,68,0.1);   color: var(--red); }
 
-  .hist-tech  { color: var(--accent); width: 88px; }
-  .hist-score { color: var(--text); width: 42px; }
-  .hist-id    { color: var(--text-3); flex: 1; }
-  .hist-time  { color: var(--text-3); font-size: 10.5px; }
+  .h-tid   { color: var(--accent); width: 82px; }
+  .h-score { color: var(--text); width: 38px; }
+  .h-id    { color: var(--text3); flex: 1; }
+  .h-time  { color: var(--text3); font-size: 10px; }
 
   /* ── EMPTY STATE ── */
-  .empty {
-    padding: 40px 20px;
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
     text-align: center;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-3);
   }
 
+  .empty-icon {
+    font-size: 36px;
+    opacity: 0.2;
+  }
+
+  .empty-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text2);
+  }
+
+  .empty-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.7;
+    max-width: 380px;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--border2); }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-val.accent { color: var(--accent); }
+  .stat-val.green  { color: var(--green); }
+
   /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  /* ── FADE ── */
-  .fade-in { animation: fadein 0.3s ease; }
-  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  /* ── ANIM ── */
+  .fade-in {
+    animation: fadein 0.4s ease both;
+  }
 
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 0 -16px;
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 260px 1fr; }
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+  }
+
+  @media (max-width: 850px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .two-col { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
+<!-- NAV -->
 <nav>
   <div class="nav-left">
     <div class="nav-logo">PT</div>
     <div>
-      <div class="nav-title">Purple Team Automation Framework</div>
-      <div class="nav-subtitle">LLM-Driven · MITRE ATT&amp;CK · Red-First Architecture</div>
+      <div class="nav-brand">Purple<span>Team</span> Framework</div>
+      <div class="nav-tag">LLM-Driven · MITRE ATT&amp;CK · Red-First Architecture</div>
     </div>
   </div>
   <div class="nav-right">
     <div class="api-status" id="api-status">
       <div class="dot" id="api-dot"></div>
-      <span id="api-label">Checking API...</span>
-    </div>
-    <div class="nav-info">
-      Kushagra Patel · 2201302012<br/>
-      Quantum University Roorkee
+      <span id="api-label">Checking...</span>
     </div>
   </div>
 </nav>
 
-<!-- MAIN LAYOUT -->
+<!-- LAYOUT -->
 <div class="layout">
 
   <!-- SIDEBAR -->
   <aside>
 
-    <!-- Technique Selector -->
     <div>
-      <div class="sidebar-section-title">Select Technique</div>
+      <div class="section-label">Select Technique</div>
       <div class="tech-list" id="technique-selector">
         <div class="tech-card selected" data-id="T1059.001" onclick="selectTechnique(this)">
-          <div class="tech-card-top">
-            <span class="tech-id-tag">T1059.001</span>
-            <span class="tactic-tag">Execution</span>
+          <div class="tech-top">
+            <span class="tid">T1059.001</span>
+            <span class="tactic">Execution</span>
           </div>
-          <div class="tech-name">PowerShell Execution</div>
+          <div class="tname">PowerShell Execution</div>
         </div>
         <div class="tech-card" data-id="T1003.001" onclick="selectTechnique(this)">
-          <div class="tech-card-top">
-            <span class="tech-id-tag">T1003.001</span>
-            <span class="tactic-tag">Credential Access</span>
+          <div class="tech-top">
+            <span class="tid">T1003.001</span>
+            <span class="tactic">Credential Access</span>
           </div>
-          <div class="tech-name">LSASS Memory Dump</div>
+          <div class="tname">LSASS Memory Dump</div>
         </div>
         <div class="tech-card" data-id="T1547.001" onclick="selectTechnique(this)">
-          <div class="tech-card-top">
-            <span class="tech-id-tag">T1547.001</span>
-            <span class="tactic-tag">Persistence</span>
+          <div class="tech-top">
+            <span class="tid">T1547.001</span>
+            <span class="tactic">Persistence</span>
           </div>
-          <div class="tech-name">Registry Run Key</div>
+          <div class="tname">Registry Run Key</div>
         </div>
         <div class="tech-card" data-id="T1055.001" onclick="selectTechnique(this)">
-          <div class="tech-card-top">
-            <span class="tech-id-tag">T1055.001</span>
-            <span class="tactic-tag">Defense Evasion</span>
+          <div class="tech-top">
+            <span class="tid">T1055.001</span>
+            <span class="tactic">Defense Evasion</span>
           </div>
-          <div class="tech-name">DLL Injection</div>
+          <div class="tname">DLL Injection</div>
         </div>
         <div class="tech-card" data-id="T1078" onclick="selectTechnique(this)">
-          <div class="tech-card-top">
-            <span class="tech-id-tag">T1078</span>
-            <span class="tactic-tag">Initial Access</span>
+          <div class="tech-top">
+            <span class="tid">T1078</span>
+            <span class="tactic">Initial Access</span>
           </div>
-          <div class="tech-name">Valid Accounts</div>
+          <div class="tname">Valid Accounts</div>
+        </div>
+        <div class="tech-card" data-id="T1082" onclick="selectTechnique(this)">
+          <div class="tech-top">
+            <span class="tid">T1082</span>
+            <span class="tactic">Discovery</span>
+          </div>
+          <div class="tname">System Info Discovery</div>
+        </div>
+        <div class="tech-card" data-id="T1071.001" onclick="selectTechnique(this)">
+          <div class="tech-top">
+            <span class="tid">T1071.001</span>
+            <span class="tactic">C2</span>
+          </div>
+          <div class="tname">C2 Web Protocols</div>
         </div>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Log Count + Run -->
     <div>
-      <div class="sidebar-section-title">Configuration</div>
+      <div class="section-label">Configuration</div>
       <div class="control-row">
         <div class="control-label">
           Log Count
-          <span id="log-val">5</span>
+          <strong id="log-val">5</strong>
         </div>
-        <input type="range" min="1" max="20" value="5" id="log-count"
+        <input type="range" min="1" max="50" value="5" id="log-count"
           oninput="document.getElementById('log-val').textContent=this.value"/>
       </div>
       <br/>
-      <button class="run-btn" id="run-btn" onclick="runPipeline()">Run Pipeline</button>
+      <button class="run-btn" id="run-btn" onclick="runPipeline()">▶ Run Pipeline</button>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Pipeline Stages -->
     <div>
-      <div class="sidebar-section-title">Pipeline Stages</div>
+      <div class="section-label">Pipeline Stages</div>
       <div class="stage-list">
         <div class="stage-item" id="stage-red">
-          <div class="stage-icon">1</div>
-          <div class="stage-label">
-            <div class="stage-name">Red Engine</div>
-            <div class="stage-desc">Adversary simulation</div>
+          <div class="stage-num">1</div>
+          <div class="stage-info">
+            <div class="sname">Red Engine</div>
+            <div class="sdesc">Adversary simulation</div>
           </div>
-          <div class="stage-status waiting" id="stage-red-status">idle</div>
+          <div class="sstatus waiting" id="stage-red-status">idle</div>
         </div>
         <div class="stage-item" id="stage-blue">
-          <div class="stage-icon">2</div>
-          <div class="stage-label">
-            <div class="stage-name">Blue Engine</div>
-            <div class="stage-desc">Claude → Sigma rule</div>
+          <div class="stage-num">2</div>
+          <div class="stage-info">
+            <div class="sname">Blue Engine</div>
+            <div class="sdesc">Sigma rule generation</div>
           </div>
-          <div class="stage-status waiting" id="stage-blue-status">idle</div>
+          <div class="sstatus waiting" id="stage-blue-status">idle</div>
         </div>
         <div class="stage-item" id="stage-val">
-          <div class="stage-icon">3</div>
-          <div class="stage-label">
-            <div class="stage-name">Validator</div>
-            <div class="stage-desc">Coverage scoring</div>
+          <div class="stage-num">3</div>
+          <div class="stage-info">
+            <div class="sname">Validator</div>
+            <div class="sdesc">Coverage scoring</div>
           </div>
-          <div class="stage-status waiting" id="stage-val-status">idle</div>
+          <div class="sstatus waiting" id="stage-val-status">idle</div>
         </div>
         <div class="stage-item" id="stage-done">
-          <div class="stage-icon">✓</div>
-          <div class="stage-label">
-            <div class="stage-name">Complete</div>
-            <div class="stage-desc">Full report ready</div>
+          <div class="stage-num">✓</div>
+          <div class="stage-info">
+            <div class="sname">Complete</div>
+            <div class="sdesc">Report ready</div>
           </div>
-          <div class="stage-status waiting" id="stage-done-status">pending</div>
+          <div class="sstatus waiting" id="stage-done-status">pending</div>
         </div>
       </div>
     </div>
 
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main>
 
-    <!-- Error box -->
-    <div class="error-box" id="error-box" style="display:none;"></div>
+    <div class="err-box" id="err-box" style="display:none;"></div>
+    <div class="progress-bar" id="progress-bar" style="display:none;"><div class="progress-fill"></div></div>
 
-    <!-- Loading bar -->
-    <div class="loading-bar" id="loading-bar" style="display:none;">
-      <div class="loading-bar-fill"></div>
+    <!-- Empty state -->
+    <div id="empty-state">
+      <div class="card">
+        <div class="empty-state">
+          <div class="empty-icon">⚡</div>
+          <div class="empty-title">Ready to run</div>
+          <div class="empty-sub">
+            Select a MITRE ATT&amp;CK technique from the sidebar,<br/>
+            configure log count, then click <strong>Run Pipeline</strong>.<br/>
+            Red Engine → Blue Engine → Validator → Report.
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card" id="history-panel" style="margin-top:18px;">
+        <div class="card-head">
+          <div class="card-title">Pipeline History</div>
+        </div>
+        <div class="card-body" id="history-list">
+          <div class="empty-state" style="padding:24px;">
+            <div class="empty-sub">No runs yet.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Results -->
     <div id="results-section" style="display:none;">
 
-      <div class="results-grid">
+      <!-- Stats row -->
+      <div class="stats-row fade-in" id="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Technique</div>
+          <div class="stat-val accent" id="stat-tid">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Logs Generated</div>
+          <div class="stat-val" id="stat-logs">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Logs Detected</div>
+          <div class="stat-val green" id="stat-matched">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Coverage</div>
+          <div class="stat-val" id="stat-cov">—</div>
+        </div>
+      </div>
 
-        <!-- Telemetry Logs -->
+      <!-- Logs + Coverage -->
+      <div class="two-col">
+
         <div class="card fade-in">
-          <div class="card-header">
+          <div class="card-head">
             <div class="card-title">
               Telemetry Logs
-              <span class="card-badge">Red Engine</span>
+              <span class="badge red">Red Engine</span>
             </div>
           </div>
           <div style="overflow-x:auto;">
             <table class="log-table" id="log-table">
               <thead>
                 <tr>
-                  <th>Event ID</th>
+                  <th>Event</th>
                   <th>Process</th>
                   <th>Command</th>
                   <th>Host</th>
@@ -797,30 +979,30 @@
           </div>
         </div>
 
-        <!-- Coverage -->
         <div class="card fade-in">
-          <div class="card-header">
+          <div class="card-head">
             <div class="card-title">
               Detection Coverage
-              <span class="card-badge">Validator</span>
+              <span class="badge green">Validator</span>
             </div>
           </div>
           <div class="card-body">
-            <div class="coverage-wrap">
-              <div class="score-ring">
+            <div class="cov-wrap">
+              <div class="ring-wrap">
                 <svg width="130" height="130" viewBox="0 0 130 130">
-                  <circle class="score-ring-bg" cx="65" cy="65" r="52"/>
-                  <circle class="score-ring-fg" id="score-ring-fg" cx="65" cy="65" r="52"
+                  <circle class="ring-bg" cx="65" cy="65" r="52"/>
+                  <circle class="ring-fg" id="ring-fg" cx="65" cy="65" r="52"
                     stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
                 </svg>
-                <div class="score-num" id="score-num">--%<small>COVERAGE</small></div>
+                <div class="ring-text">
+                  <div class="ring-pct" id="ring-pct">--%</div>
+                  <div class="ring-label">Coverage</div>
+                </div>
               </div>
-              <div class="status-pill" id="status-badge">---</div>
-              <div class="match-text" id="match-stats">Run pipeline to see results</div>
+              <div class="status-pill" id="status-pill">---</div>
+              <div class="match-stat" id="match-stat">Run pipeline to see results</div>
             </div>
-
-            <!-- Validation details -->
-            <div class="val-list" id="val-details"></div>
+            <div class="val-list" id="val-list"></div>
           </div>
         </div>
 
@@ -828,48 +1010,56 @@
 
       <!-- Sigma Rule -->
       <div class="card fade-in">
-        <div class="card-header">
+        <div class="card-head">
           <div class="card-title">
             Generated Sigma Rule
-            <span class="card-badge">Blue Engine · Claude API</span>
+            <span class="badge blue">Blue Engine</span>
           </div>
         </div>
         <div class="card-body">
           <div class="sigma-block" id="sigma-block">// Sigma rule will appear here after pipeline runs</div>
-          <div class="token-row" id="token-info" style="display:none;">
-            <div>Prompt tokens: <span id="tok-prompt">-</span></div>
-            <div>Completion tokens: <span id="tok-complete">-</span></div>
-            <div>Rule: <span id="rule-title">-</span></div>
+          <div class="sigma-meta" id="sigma-meta" style="display:none;">
+            <div>Prompt tokens: <span id="tok-p">—</span></div>
+            <div>Completion tokens: <span id="tok-c">—</span></div>
+            <div>Rule: <span id="rule-name">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card" id="history-panel-2">
+        <div class="card-head">
+          <div class="card-title">Pipeline History</div>
+        </div>
+        <div class="card-body" id="history-list-2">
+          <div class="empty-state" style="padding:20px;">
+            <div class="empty-sub">No saved runs yet.</div>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Default empty state -->
-    <div id="empty-state">
-      <div class="card" style="margin-top:8px;">
-        <div class="empty">
-          Select a technique and click <strong>Run Pipeline</strong> to start.<br/>
-          The framework will simulate attack logs, call Claude to generate a Sigma rule,<br/>
-          then score detection coverage automatically.
-        </div>
-      </div>
-    </div>
-
-    <!-- History -->
-    <div class="card" id="history-panel">
-      <div class="card-header">
-        <div class="card-title">Pipeline History</div>
-      </div>
-      <div class="card-body" id="history-list">
-        <div class="empty">No runs yet.</div>
-      </div>
-    </div>
-
   </main>
-
 </div>
+
+<!-- FOOTER -->
+<footer style="
+  border-top: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg2);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  position: relative;
+  z-index: 1;
+">
+  <span>© 2026 Kushagra Patel — LLM-Driven Purple Team Automation Framework</span>
+  <span style="color: var(--text3);">B.Tech Cybersecurity · Quantum University Roorkee · Final Year Project</span>
+</footer>
 
 <script>
 const API = 'http://localhost:8000';
@@ -881,9 +1071,9 @@ function selectTechnique(el) {
   selectedTechnique = el.dataset.id;
 }
 
-function setStage(stage, status) {
-  const el = document.getElementById('stage-' + stage);
-  const st = document.getElementById('stage-' + stage + '-status');
+function setStage(s, status) {
+  const el = document.getElementById('stage-' + s);
+  const st = document.getElementById('stage-' + s + '-status');
   el.classList.remove('active','done');
   st.classList.remove('waiting','running','complete');
   if (status === 'running') {
@@ -896,21 +1086,11 @@ function setStage(stage, status) {
     st.textContent = 'done';
   } else {
     st.classList.add('waiting');
-    st.textContent = stage === 'done' ? 'pending' : 'idle';
+    st.textContent = s === 'done' ? 'pending' : 'idle';
   }
 }
 
-function setError(msg) {
-  const box = document.getElementById('error-box');
-  box.style.display = 'block';
-  box.textContent = 'Error: ' + msg;
-}
-
-function clearError() {
-  document.getElementById('error-box').style.display = 'none';
-}
-
-function syntaxHighlight(yaml) {
+function syntaxHL(yaml) {
   return yaml
     .replace(/^([\w]+):/gm, '<span class="key">$1</span>:')
     .replace(/:\s*([^#\n{}\[\]]+)/g, (m, v) => {
@@ -923,161 +1103,157 @@ function syntaxHighlight(yaml) {
 }
 
 async function runPipeline() {
-  clearError();
-  const logCount = parseInt(document.getElementById('log-count').value);
   const btn = document.getElementById('run-btn');
+  const logCount = parseInt(document.getElementById('log-count').value);
 
-  btn.disabled = true;
-  btn.classList.add('loading');
-  btn.textContent = 'Running...';
-  document.getElementById('loading-bar').style.display = 'block';
+  document.getElementById('err-box').style.display = 'none';
+  document.getElementById('progress-bar').style.display = 'block';
   document.getElementById('results-section').style.display = 'none';
   document.getElementById('empty-state').style.display = 'none';
-
-  ['red','blue','val','done'].forEach(s => setStage(s, 'waiting'));
+  btn.disabled = true;
+  btn.textContent = '⏳ Running...';
+  ['red','blue','val','done'].forEach(s => setStage(s,'waiting'));
 
   try {
-    setStage('red', 'running');
+    setStage('red','running');
     await new Promise(r => setTimeout(r, 400));
 
     const res = await fetch(API + '/pipeline/run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        technique_id: selectedTechnique,
-        log_count: logCount,
-        save_artifacts: true
-      })
+      body: JSON.stringify({ technique_id: selectedTechnique, log_count: logCount, save_artifacts: true })
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Server error');
+      const e = await res.json();
+      throw new Error(e.detail || 'Server error');
     }
 
-    setStage('red', 'done');
-    setStage('blue', 'running');
+    setStage('red','done'); setStage('blue','running');
     await new Promise(r => setTimeout(r, 300));
-    setStage('blue', 'done');
-    setStage('val', 'running');
+    setStage('blue','done'); setStage('val','running');
     await new Promise(r => setTimeout(r, 300));
 
     const data = await res.json();
-
-    setStage('val', 'done');
-    setStage('done', 'done');
+    setStage('val','done'); setStage('done','done');
 
     renderResults(data);
     loadHistory();
 
-  } catch (e) {
-    setError(e.message);
-    ['red','blue','val','done'].forEach(s => setStage(s, 'waiting'));
+  } catch(e) {
+    const box = document.getElementById('err-box');
+    box.style.display = 'block';
+    box.textContent = '⚠ Error: ' + e.message;
+    ['red','blue','val','done'].forEach(s => setStage(s,'waiting'));
     document.getElementById('empty-state').style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.textContent = 'Run Pipeline';
-    document.getElementById('loading-bar').style.display = 'none';
+    btn.textContent = '▶ Run Pipeline';
+    document.getElementById('progress-bar').style.display = 'none';
   }
 }
 
 function renderResults(data) {
   document.getElementById('results-section').style.display = 'block';
 
-  // Logs table
+  // Stats
+  const score = data.validator_result.coverage_score;
+  const pct = Math.round(score * 100);
+  const status = data.validator_result.status;
+  document.getElementById('stat-tid').textContent = data.technique_id || selectedTechnique;
+  document.getElementById('stat-logs').textContent = data.validator_result.total_logs;
+  document.getElementById('stat-matched').textContent = data.validator_result.matched_logs;
+  document.getElementById('stat-cov').textContent = pct + '%';
+
+  // Log table
   const tbody = document.getElementById('log-tbody');
   tbody.innerHTML = '';
   data.red_result.logs.forEach(log => {
     const tr = document.createElement('tr');
-    const cmd = (log.command_line || 'N/A').substring(0, 45) + (log.command_line && log.command_line.length > 45 ? '...' : '');
+    const cmd = (log.command_line || 'N/A');
+    const short = cmd.length > 42 ? cmd.substring(0,42) + '…' : cmd;
     tr.innerHTML = `
-      <td><span class="evid-badge">${log.event_id}</span></td>
+      <td><span class="evid">${log.event_id}</span></td>
       <td>${log.process_name}</td>
-      <td title="${log.command_line || ''}">${cmd}</td>
+      <td title="${cmd}">${short}</td>
       <td>${log.hostname}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Coverage score
-  const score = data.validator_result.coverage_score;
-  const pct = Math.round(score * 100);
-  const status = data.validator_result.status;
-  const circumference = 326.7;
-  const offset = circumference - (pct / 100) * circumference;
-
-  const ring = document.getElementById('score-ring-fg');
-  const ringColor = status === 'PASS' ? '#22c55e' : status === 'WARN' ? '#eab308' : '#ef4444';
-  ring.style.stroke = ringColor;
-  ring.style.strokeDashoffset = circumference;
+  // Ring
+  const C = 326.7;
+  const offset = C - (pct/100) * C;
+  const color = status === 'PASS' ? '#10b981' : status === 'WARN' ? '#f59e0b' : '#ef4444';
+  const ring = document.getElementById('ring-fg');
+  ring.style.stroke = color;
+  ring.style.strokeDashoffset = C;
   setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
 
-  document.getElementById('score-num').innerHTML = `${pct}%<small>COVERAGE</small>`;
+  document.getElementById('ring-pct').textContent = pct + '%';
 
-  const badge = document.getElementById('status-badge');
-  badge.textContent = status;
-  badge.className = 'status-pill ' + status;
+  const pill = document.getElementById('status-pill');
+  pill.textContent = status;
+  pill.className = 'status-pill ' + status;
 
-  document.getElementById('match-stats').innerHTML =
+  document.getElementById('match-stat').innerHTML =
     `<b>${data.validator_result.matched_logs}</b> of <b>${data.validator_result.total_logs}</b> logs detected<br/>
-     ID: ${data.pipeline_id.substring(0,8)}...`;
+     Run ID: ${data.pipeline_id.substring(0,12)}...`;
 
-  // Validation details
-  const valDiv = document.getElementById('val-details');
-  valDiv.innerHTML = '';
+  // Val details
+  const vl = document.getElementById('val-list');
+  vl.innerHTML = '';
   data.validator_result.details.forEach(d => {
     const row = document.createElement('div');
     row.className = 'val-row';
     row.innerHTML = `
       <span class="val-icon">${d.matched ? '✓' : '✗'}</span>
-      <span class="val-logid">${d.log_id.substring(0,8)}...</span>
+      <span class="val-lid">${d.log_id.substring(0,8)}…</span>
       <span class="val-reason ${d.matched ? 'matched' : 'missed'}">${d.match_reason}</span>
     `;
-    valDiv.appendChild(row);
+    vl.appendChild(row);
   });
 
-  // Sigma rule
-  const rawYaml = data.blue_result.sigma_rule.raw_yaml || '';
-  document.getElementById('sigma-block').innerHTML = syntaxHighlight(rawYaml);
+  // Sigma
+  const yaml = data.blue_result.sigma_rule.raw_yaml || '';
+  document.getElementById('sigma-block').innerHTML = syntaxHL(yaml);
+  document.getElementById('tok-p').textContent = data.blue_result.prompt_tokens;
+  document.getElementById('tok-c').textContent = data.blue_result.completion_tokens;
+  document.getElementById('rule-name').textContent = data.blue_result.sigma_rule.title;
+  document.getElementById('sigma-meta').style.display = 'flex';
 
-  // Token info
-  document.getElementById('tok-prompt').textContent = data.blue_result.prompt_tokens;
-  document.getElementById('tok-complete').textContent = data.blue_result.completion_tokens;
-  document.getElementById('rule-title').textContent = data.blue_result.sigma_rule.title;
-  document.getElementById('token-info').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  window.scrollTo({ top: document.getElementById('results-section').offsetTop - 20, behavior: 'smooth' });
+function renderHistory(data, listId) {
+  const list = document.getElementById(listId);
+  if (!data.runs || data.runs.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:20px;"><div class="empty-sub">No saved runs yet.</div></div>';
+    return;
+  }
+  list.innerHTML = '';
+  data.runs.forEach(run => {
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    const time = run.completed_at ? run.completed_at.substring(0,19).replace('T',' ') : '—';
+    row.innerHTML = `
+      <span class="h-status ${run.overall_status}">${run.overall_status}</span>
+      <span class="h-tid">${run.technique_id}</span>
+      <span class="h-score">${Math.round(run.coverage_score*100)}%</span>
+      <span class="h-id">${run.pipeline_id.substring(0,14)}…</span>
+      <span class="h-time">${time}</span>
+    `;
+    list.appendChild(row);
+  });
 }
 
 async function loadHistory() {
   try {
     const res = await fetch(API + '/runs');
     const data = await res.json();
-    const list = document.getElementById('history-list');
-
-    if (!data.runs || data.runs.length === 0) {
-      list.innerHTML = '<div class="empty">No saved runs yet.</div>';
-      return;
-    }
-
-    list.innerHTML = '';
-    data.runs.forEach(run => {
-      const row = document.createElement('div');
-      row.className = 'history-row';
-      const time = run.completed_at ? run.completed_at.substring(0,19).replace('T',' ') : 'unknown';
-      row.innerHTML = `
-        <span class="hist-status ${run.overall_status}">${run.overall_status}</span>
-        <span class="hist-tech">${run.technique_id}</span>
-        <span class="hist-score">${Math.round(run.coverage_score*100)}%</span>
-        <span class="hist-id">${run.pipeline_id.substring(0,16)}...</span>
-        <span class="hist-time">${time}</span>
-      `;
-      list.appendChild(row);
-    });
-  } catch(e) {
-    // silently fail if API not up
-  }
+    renderHistory(data, 'history-list');
+    renderHistory(data, 'history-list-2');
+  } catch(e) {}
 }
 
 async function checkAPI() {
@@ -1089,7 +1265,7 @@ async function checkAPI() {
     }
   } catch(e) {
     document.getElementById('api-dot').className = 'dot offline';
-    document.getElementById('api-label').textContent = 'API offline — start server';
+    document.getElementById('api-label').textContent = 'API offline';
   }
 }
 
