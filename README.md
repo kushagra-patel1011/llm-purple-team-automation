@@ -2,9 +2,7 @@
 
 ### Red-First Architecture | MITRE ATT&CK Mapped | LLM-Powered Detection Engine
 
-**Author:** Kushagra Patel | Roll No. 2201302012
-**Institution:** Quantum University Roorkee
-**Program:** B.Tech Computer Science & Engineering (Cybersecurity) — Final Year Project (2025–26)
+**Author:** Kushagra Patel 
 
 ---
 
