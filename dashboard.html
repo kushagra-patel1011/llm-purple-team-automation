@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Purple Team Framework — Kushagra Patel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #0f1117;
+    --surface:    #1a1d27;
+    --surface2:   #22263a;
+    --border:     #2e3352;
+    --border2:    #3d4468;
+    --accent:     #6366f1;
+    --accent-dim: #4f52c5;
+    --green:      #22c55e;
+    --yellow:     #eab308;
+    --red:        #ef4444;
+    --blue:       #3b82f6;
+    --text:       #e2e8f0;
+    --text-2:     #94a3b8;
+    --text-3:     #475569;
+    --mono:       'JetBrains Mono', monospace;
+    --sans:       'Inter', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── TOP NAV ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-logo {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+    flex-shrink: 0;
+  }
+
+  .nav-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .nav-subtitle {
+    font-size: 11px;
+    color: var(--text-2);
+    font-family: var(--mono);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-2);
+    font-family: var(--mono);
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .dot.offline { background: var(--red); }
+
+  .nav-info {
+    font-size: 12px;
+    color: var(--text-3);
+    font-family: var(--mono);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sidebar-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  /* Technique cards */
+  .tech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tech-card {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: var(--bg);
+  }
+
+  .tech-card:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .tech-card.selected {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.08);
+  }
+
+  .tech-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3px;
+  }
+
+  .tech-id-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(99,102,241,0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .tactic-tag {
+    font-size: 10px;
+    color: var(--text-3);
+  }
+
+  .tech-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* Log count control */
+  .control-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .control-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  .control-label span {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+  }
+
+  /* Run button */
+  .run-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .run-btn:hover { background: var(--accent-dim); }
+  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .run-btn.loading { opacity: 0.8; }
+
+  /* Pipeline stages in sidebar */
+  .stage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stage-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    transition: background 0.15s;
+  }
+
+  .stage-item.active  { background: rgba(99,102,241,0.1); }
+  .stage-item.done    { background: rgba(34,197,94,0.07); }
+
+  .stage-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    color: var(--text-3);
+    flex-shrink: 0;
+    font-family: var(--mono);
+    transition: all 0.2s;
+  }
+
+  .stage-item.active .stage-icon {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(99,102,241,0.15);
+  }
+
+  .stage-item.done .stage-icon {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(34,197,94,0.1);
+  }
+
+  .stage-label {
+    flex: 1;
+  }
+
+  .stage-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .stage-desc {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: var(--mono);
+  }
+
+  .stage-status {
+    font-size: 10px;
+    font-family: var(--mono);
+  }
+
+  .stage-status.waiting  { color: var(--text-3); }
+  .stage-status.running  { color: var(--yellow); }
+  .stage-status.complete { color: var(--green); }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  /* Error box */
+  .error-box {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--red);
+  }
+
+  /* Loading bar */
+  .loading-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-bottom: -16px;
+  }
+
+  .loading-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    animation: load-slide 1.4s ease-in-out infinite;
+  }
+
+  @keyframes load-slide {
+    0%   { transform: translateX(-100%) scaleX(0.5); }
+    50%  { transform: translateX(0%)    scaleX(1); }
+    100% { transform: translateX(100%)  scaleX(0.5); }
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+
+  .card-body {
+    padding: 16px 18px;
+  }
+
+  /* ── RESULTS GRID ── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { border-right: none; border-bottom: 1px solid var(--border); }
+    .results-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── LOG TABLE ── */
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 11.5px;
+  }
+
+  .log-table th {
+    text-align: left;
+    padding: 7px 10px;
+    background: var(--surface2);
+    color: var(--text-3);
+    font-weight: 500;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .log-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(46,51,82,0.5);
+    color: var(--text-2);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .log-table tr:last-child td { border-bottom: none; }
+  .log-table tr:hover td { background: rgba(99,102,241,0.04); }
+
+  .evid-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(59,130,246,0.12);
+    color: var(--blue);
+    border-radius: 3px;
+    font-size: 10px;
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+
+  /* ── COVERAGE SECTION ── */
+  .coverage-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 0;
+  }
+
+  .score-ring { position: relative; width: 130px; height: 130px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 9; }
+  .score-ring-fg {
+    fill: none; stroke-width: 9; stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease, stroke 0.5s;
+  }
+
+  .score-num {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    line-height: 1;
+    font-family: var(--mono);
+  }
+
+  .score-num small {
+    display: block;
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--text-3);
+    margin-top: 3px;
+    letter-spacing: 0.08em;
+  }
+
+  .status-pill {
+    padding: 5px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+  }
+
+  .status-pill.PASS { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .status-pill.WARN { background: rgba(234,179,8,0.12);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.3); }
+  .status-pill.FAIL { background: rgba(239,68,68,0.12);  color: var(--red);   border: 1px solid rgba(239,68,68,0.3); }
+
+  .match-text {
+    font-size: 12px;
+    color: var(--text-2);
+    font-family: var(--mono);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  .match-text b { color: var(--text); }
+
+  /* ── VALIDATION DETAILS ── */
+  .val-list { display: flex; flex-direction: column; }
+
+  .val-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(46,51,82,0.4);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .val-row:last-child { border-bottom: none; }
+
+  .val-icon { flex-shrink: 0; margin-top: 1px; }
+  .val-logid { color: var(--text-3); flex-shrink: 0; width: 75px; }
+  .val-reason { flex: 1; }
+  .val-reason.matched { color: var(--green); }
+  .val-reason.missed  { color: #f87171; }
+
+  /* ── SIGMA BLOCK ── */
+  .sigma-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-2);
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .sigma-block .key     { color: #7dd3fc; }
+  .sigma-block .val     { color: var(--green); }
+  .sigma-block .str     { color: #fcd34d; }
+  .sigma-block .comment { color: var(--text-3); }
+
+  /* ── TOKEN INFO ── */
+  .token-row {
+    display: flex;
+    gap: 16px;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-3);
+    flex-wrap: wrap;
+  }
+
+  .token-row span { color: var(--text-2); }
+
+  /* ── HISTORY TABLE ── */
+  .history-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(46,51,82,0.35);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-radius: 4px;
+    padding-left: 4px;
+  }
+
+  .history-row:last-child { border-bottom: none; }
+  .history-row:hover { background: var(--surface2); }
+
+  .hist-status {
+    width: 38px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 3px;
+    text-align: center;
+  }
+
+  .hist-status.PASS { background: rgba(34,197,94,0.12); color: var(--green); }
+  .hist-status.WARN { background: rgba(234,179,8,0.12);  color: var(--yellow); }
+  .hist-status.FAIL { background: rgba(239,68,68,0.12);  color: var(--red); }
+
+  .hist-tech  { color: var(--accent); width: 88px; }
+  .hist-score { color: var(--text); width: 42px; }
+  .hist-id    { color: var(--text-3); flex: 1; }
+  .hist-time  { color: var(--text-3); font-size: 10.5px; }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    padding: 40px 20px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── FADE ── */
+  .fade-in { animation: fadein 0.3s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 -16px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-logo">PT</div>
+    <div>
+      <div class="nav-title">Purple Team Automation Framework</div>
+      <div class="nav-subtitle">LLM-Driven · MITRE ATT&amp;CK · Red-First Architecture</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="api-status" id="api-status">
+      <div class="dot" id="api-dot"></div>
+      <span id="api-label">Checking API...</span>
+    </div>
+    <div class="nav-info">
+      Kushagra Patel · 2201302012<br/>
+      Quantum University Roorkee
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside>
+
+    <!-- Technique Selector -->
+    <div>
+      <div class="sidebar-section-title">Select Technique</div>
+      <div class="tech-list" id="technique-selector">
+        <div class="tech-card selected" data-id="T1059.001" onclick="selectTechnique(this)">
+          <div class="tech-card-top">
+            <span class="tech-id-tag">T1059.001</span>
+            <span class="tactic-tag">Execution</span>
+          </div>
+          <div class="tech-name">PowerShell Execution</div>
+        </div>
+        <div class="tech-card" data-id="T1003.001" onclick="selectTechnique(this)">
+          <div class="tech-card-top">
+            <span class="tech-id-tag">T1003.001</span>
+            <span class="tactic-tag">Credential Access</span>
+          </div>
+          <div class="tech-name">LSASS Memory Dump</div>
+        </div>
+        <div class="tech-card" data-id="T1547.001" onclick="selectTechnique(this)">
+          <div class="tech-card-top">
+            <span class="tech-id-tag">T1547.001</span>
+            <span class="tactic-tag">Persistence</span>
+          </div>
+          <div class="tech-name">Registry Run Key</div>
+        </div>
+        <div class="tech-card" data-id="T1055.001" onclick="selectTechnique(this)">
+          <div class="tech-card-top">
+            <span class="tech-id-tag">T1055.001</span>
+            <span class="tactic-tag">Defense Evasion</span>
+          </div>
+          <div class="tech-name">DLL Injection</div>
+        </div>
+        <div class="tech-card" data-id="T1078" onclick="selectTechnique(this)">
+          <div class="tech-card-top">
+            <span class="tech-id-tag">T1078</span>
+            <span class="tactic-tag">Initial Access</span>
+          </div>
+          <div class="tech-name">Valid Accounts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Log Count + Run -->
+    <div>
+      <div class="sidebar-section-title">Configuration</div>
+      <div class="control-row">
+        <div class="control-label">
+          Log Count
+          <span id="log-val">5</span>
+        </div>
+        <input type="range" min="1" max="20" value="5" id="log-count"
+          oninput="document.getElementById('log-val').textContent=this.value"/>
+      </div>
+      <br/>
+      <button class="run-btn" id="run-btn" onclick="runPipeline()">Run Pipeline</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Pipeline Stages -->
+    <div>
+      <div class="sidebar-section-title">Pipeline Stages</div>
+      <div class="stage-list">
+        <div class="stage-item" id="stage-red">
+          <div class="stage-icon">1</div>
+          <div class="stage-label">
+            <div class="stage-name">Red Engine</div>
+            <div class="stage-desc">Adversary simulation</div>
+          </div>
+          <div class="stage-status waiting" id="stage-red-status">idle</div>
+        </div>
+        <div class="stage-item" id="stage-blue">
+          <div class="stage-icon">2</div>
+          <div class="stage-label">
+            <div class="stage-name">Blue Engine</div>
+            <div class="stage-desc">Claude → Sigma rule</div>
+          </div>
+          <div class="stage-status waiting" id="stage-blue-status">idle</div>
+        </div>
+        <div class="stage-item" id="stage-val">
+          <div class="stage-icon">3</div>
+          <div class="stage-label">
+            <div class="stage-name">Validator</div>
+            <div class="stage-desc">Coverage scoring</div>
+          </div>
+          <div class="stage-status waiting" id="stage-val-status">idle</div>
+        </div>
+        <div class="stage-item" id="stage-done">
+          <div class="stage-icon">✓</div>
+          <div class="stage-label">
+            <div class="stage-name">Complete</div>
+            <div class="stage-desc">Full report ready</div>
+          </div>
+          <div class="stage-status waiting" id="stage-done-status">pending</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- Error box -->
+    <div class="error-box" id="error-box" style="display:none;"></div>
+
+    <!-- Loading bar -->
+    <div class="loading-bar" id="loading-bar" style="display:none;">
+      <div class="loading-bar-fill"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-section" style="display:none;">
+
+      <div class="results-grid">
+
+        <!-- Telemetry Logs -->
+        <div class="card fade-in">
+          <div class="card-header">
+            <div class="card-title">
+              Telemetry Logs
+              <span class="card-badge">Red Engine</span>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="log-table" id="log-table">
+              <thead>
+                <tr>
+                  <th>Event ID</th>
+                  <th>Process</th>
+                  <th>Command</th>
+                  <th>Host</th>
+                </tr>
+              </thead>
+              <tbody id="log-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Coverage -->
+        <div class="card fade-in">
+          <div class="card-header">
+            <div class="card-title">
+              Detection Coverage
+              <span class="card-badge">Validator</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="coverage-wrap">
+              <div class="score-ring">
+                <svg width="130" height="130" viewBox="0 0 130 130">
+                  <circle class="score-ring-bg" cx="65" cy="65" r="52"/>
+                  <circle class="score-ring-fg" id="score-ring-fg" cx="65" cy="65" r="52"
+                    stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+                </svg>
+                <div class="score-num" id="score-num">--%<small>COVERAGE</small></div>
+              </div>
+              <div class="status-pill" id="status-badge">---</div>
+              <div class="match-text" id="match-stats">Run pipeline to see results</div>
+            </div>
+
+            <!-- Validation details -->
+            <div class="val-list" id="val-details"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sigma Rule -->
+      <div class="card fade-in">
+        <div class="card-header">
+          <div class="card-title">
+            Generated Sigma Rule
+            <span class="card-badge">Blue Engine · Claude API</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="sigma-block" id="sigma-block">// Sigma rule will appear here after pipeline runs</div>
+          <div class="token-row" id="token-info" style="display:none;">
+            <div>Prompt tokens: <span id="tok-prompt">-</span></div>
+            <div>Completion tokens: <span id="tok-complete">-</span></div>
+            <div>Rule: <span id="rule-title">-</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Default empty state -->
+    <div id="empty-state">
+      <div class="card" style="margin-top:8px;">
+        <div class="empty">
+          Select a technique and click <strong>Run Pipeline</strong> to start.<br/>
+          The framework will simulate attack logs, call Claude to generate a Sigma rule,<br/>
+          then score detection coverage automatically.
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card" id="history-panel">
+      <div class="card-header">
+        <div class="card-title">Pipeline History</div>
+      </div>
+      <div class="card-body" id="history-list">
+        <div class="empty">No runs yet.</div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+let selectedTechnique = 'T1059.001';
+
+function selectTechnique(el) {
+  document.querySelectorAll('.tech-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTechnique = el.dataset.id;
+}
+
+function setStage(stage, status) {
+  const el = document.getElementById('stage-' + stage);
+  const st = document.getElementById('stage-' + stage + '-status');
+  el.classList.remove('active','done');
+  st.classList.remove('waiting','running','complete');
+  if (status === 'running') {
+    el.classList.add('active');
+    st.classList.add('running');
+    st.textContent = 'running';
+  } else if (status === 'done') {
+    el.classList.add('done');
+    st.classList.add('complete');
+    st.textContent = 'done';
+  } else {
+    st.classList.add('waiting');
+    st.textContent = stage === 'done' ? 'pending' : 'idle';
+  }
+}
+
+function setError(msg) {
+  const box = document.getElementById('error-box');
+  box.style.display = 'block';
+  box.textContent = 'Error: ' + msg;
+}
+
+function clearError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+
+function syntaxHighlight(yaml) {
+  return yaml
+    .replace(/^([\w]+):/gm, '<span class="key">$1</span>:')
+    .replace(/:\s*([^#\n{}\[\]]+)/g, (m, v) => {
+      v = v.trim();
+      if (v.startsWith("'") || v.startsWith('"') || /[a-zA-Z\-]/.test(v[0]))
+        return ': <span class="str">' + v + '</span>';
+      return ': <span class="val">' + v + '</span>';
+    })
+    .replace(/(#.*)$/gm, '<span class="comment">$1</span>');
+}
+
+async function runPipeline() {
+  clearError();
+  const logCount = parseInt(document.getElementById('log-count').value);
+  const btn = document.getElementById('run-btn');
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Running...';
+  document.getElementById('loading-bar').style.display = 'block';
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('empty-state').style.display = 'none';
+
+  ['red','blue','val','done'].forEach(s => setStage(s, 'waiting'));
+
+  try {
+    setStage('red', 'running');
+    await new Promise(r => setTimeout(r, 400));
+
+    const res = await fetch(API + '/pipeline/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        technique_id: selectedTechnique,
+        log_count: logCount,
+        save_artifacts: true
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Server error');
+    }
+
+    setStage('red', 'done');
+    setStage('blue', 'running');
+    await new Promise(r => setTimeout(r, 300));
+    setStage('blue', 'done');
+    setStage('val', 'running');
+    await new Promise(r => setTimeout(r, 300));
+
+    const data = await res.json();
+
+    setStage('val', 'done');
+    setStage('done', 'done');
+
+    renderResults(data);
+    loadHistory();
+
+  } catch (e) {
+    setError(e.message);
+    ['red','blue','val','done'].forEach(s => setStage(s, 'waiting'));
+    document.getElementById('empty-state').style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = 'Run Pipeline';
+    document.getElementById('loading-bar').style.display = 'none';
+  }
+}
+
+function renderResults(data) {
+  document.getElementById('results-section').style.display = 'block';
+
+  // Logs table
+  const tbody = document.getElementById('log-tbody');
+  tbody.innerHTML = '';
+  data.red_result.logs.forEach(log => {
+    const tr = document.createElement('tr');
+    const cmd = (log.command_line || 'N/A').substring(0, 45) + (log.command_line && log.command_line.length > 45 ? '...' : '');
+    tr.innerHTML = `
+      <td><span class="evid-badge">${log.event_id}</span></td>
+      <td>${log.process_name}</td>
+      <td title="${log.command_line || ''}">${cmd}</td>
+      <td>${log.hostname}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Coverage score
+  const score = data.validator_result.coverage_score;
+  const pct = Math.round(score * 100);
+  const status = data.validator_result.status;
+  const circumference = 326.7;
+  const offset = circumference - (pct / 100) * circumference;
+
+  const ring = document.getElementById('score-ring-fg');
+  const ringColor = status === 'PASS' ? '#22c55e' : status === 'WARN' ? '#eab308' : '#ef4444';
+  ring.style.stroke = ringColor;
+  ring.style.strokeDashoffset = circumference;
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+
+  document.getElementById('score-num').innerHTML = `${pct}%<small>COVERAGE</small>`;
+
+  const badge = document.getElementById('status-badge');
+  badge.textContent = status;
+  badge.className = 'status-pill ' + status;
+
+  document.getElementById('match-stats').innerHTML =
+    `<b>${data.validator_result.matched_logs}</b> of <b>${data.validator_result.total_logs}</b> logs detected<br/>
+     ID: ${data.pipeline_id.substring(0,8)}...`;
+
+  // Validation details
+  const valDiv = document.getElementById('val-details');
+  valDiv.innerHTML = '';
+  data.validator_result.details.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'val-row';
+    row.innerHTML = `
+      <span class="val-icon">${d.matched ? '✓' : '✗'}</span>
+      <span class="val-logid">${d.log_id.substring(0,8)}...</span>
+      <span class="val-reason ${d.matched ? 'matched' : 'missed'}">${d.match_reason}</span>
+    `;
+    valDiv.appendChild(row);
+  });
+
+  // Sigma rule
+  const rawYaml = data.blue_result.sigma_rule.raw_yaml || '';
+  document.getElementById('sigma-block').innerHTML = syntaxHighlight(rawYaml);
+
+  // Token info
+  document.getElementById('tok-prompt').textContent = data.blue_result.prompt_tokens;
+  document.getElementById('tok-complete').textContent = data.blue_result.completion_tokens;
+  document.getElementById('rule-title').textContent = data.blue_result.sigma_rule.title;
+  document.getElementById('token-info').style.display = 'flex';
+
+  window.scrollTo({ top: document.getElementById('results-section').offsetTop - 20, behavior: 'smooth' });
+}
+
+async function loadHistory() {
+  try {
+    const res = await fetch(API + '/runs');
+    const data = await res.json();
+    const list = document.getElementById('history-list');
+
+    if (!data.runs || data.runs.length === 0) {
+      list.innerHTML = '<div class="empty">No saved runs yet.</div>';
+      return;
+    }
+
+    list.innerHTML = '';
+    data.runs.forEach(run => {
+      const row = document.createElement('div');
+      row.className = 'history-row';
+      const time = run.completed_at ? run.completed_at.substring(0,19).replace('T',' ') : 'unknown';
+      row.innerHTML = `
+        <span class="hist-status ${run.overall_status}">${run.overall_status}</span>
+        <span class="hist-tech">${run.technique_id}</span>
+        <span class="hist-score">${Math.round(run.coverage_score*100)}%</span>
+        <span class="hist-id">${run.pipeline_id.substring(0,16)}...</span>
+        <span class="hist-time">${time}</span>
+      `;
+      list.appendChild(row);
+    });
+  } catch(e) {
+    // silently fail if API not up
+  }
+}
+
+async function checkAPI() {
+  try {
+    const res = await fetch(API + '/health');
+    if (res.ok) {
+      document.getElementById('api-dot').className = 'dot';
+      document.getElementById('api-label').textContent = 'API connected';
+    }
+  } catch(e) {
+    document.getElementById('api-dot').className = 'dot offline';
+    document.getElementById('api-label').textContent = 'API offline — start server';
+  }
+}
+
+checkAPI();
+loadHistory();
+</script>
+</body>
+</html>
