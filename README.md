@@ -26,6 +26,17 @@
 
 ---
 
+## Recent Improvements
+
+- **Fixed CORS bug** — `allow_credentials=True` combined with `allow_origins=["*"]` is rejected by browsers; changed to `allow_credentials=False` so the dashboard can call the API correctly.
+- **Made `/techniques` endpoint dynamic** — previously hardcoded a list of 7 techniques that could silently drift out of sync; now built automatically from `TECHNIQUE_DETAILS` in `config.py` so one dict is the single source of truth.
+- **Made `DEMO_MODE` configurable** — was hardcoded `True` in code; now reads from `.env` (`DEMO_MODE=true/false`) so it can be toggled without changing source files.
+- **Fixed `datetime.utcnow()` deprecation** — replaced in `red_engine.py` and `artifact_store.py` with `datetime.now(timezone.utc)` (Python 3.12+ compatible).
+- **Removed dead `MockBlueEngine` class** — `BlueEngine` never used it (only imported `_SIGMA_RULES`); removed to keep the file clean.
+- **Fixed 4 failing tests** — replaced `TestBlueEngineMocked` (patched a non-existent API client) with `TestBlueEngine` that tests the real offline engine directly; replaced `test_max_tokens_is_positive` (imported an undefined config value) with a test that verifies `TECHNIQUE_DETAILS` and `SUPPORTED_TECHNIQUES` stay in sync.
+
+---
+
 ## 1. Project Overview
 
 This project implements an **LLM-driven Purple Team Automation Framework** that bridges the gap between adversary simulation (Red Team) and detection engineering (Blue Team) using a fully automated pipeline.

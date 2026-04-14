@@ -5,7 +5,7 @@
 from __future__ import annotations
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from app.config import RULES_OUTPUT_DIR, LOGS_DIR
 from app.schema.schema import PipelineResult
@@ -40,7 +40,7 @@ class ArtifactStore:
 
         pipeline_id  = result.pipeline_id
         technique_id = result.technique_id.replace(".", "_")
-        timestamp    = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp    = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 
         saved_paths = {}
 

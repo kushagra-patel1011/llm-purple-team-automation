@@ -4,10 +4,6 @@
 
 from __future__ import annotations
 import logging
-import uuid
-import yaml
-from datetime import datetime
-from app.schema.schema import TelemetryLog, SigmaRule, BlueEngineResult
 
 logger = logging.getLogger(__name__)
 
@@ -219,52 +215,3 @@ tags:
 }
 
 
-# ── Mock Blue Engine Class ────────────────────────────────────────────────────
-
-class MockBlueEngine:
-    """
-    Offline/demo replacement for BlueEngine.
-    Returns hardcoded, realistic Sigma rules for each supported technique.
-    No Claude API call is made — safe to use without ANTHROPIC_API_KEY.
-    """
-
-    def run(self, technique_id: str, logs: list[TelemetryLog]) -> BlueEngineResult:
-        raw_yaml = _SIGMA_RULES.get(technique_id)
-
-        if raw_yaml is None:
-            # Fallback generic rule so the pipeline never crashes
-            raw_yaml = (
-                f"title: Generic Detection Rule for {technique_id}\n"
-                f"id: {uuid.uuid4()}\n"
-                f"description: Placeholder rule — no mock rule defined for {technique_id}\n"
-                f"status: experimental\n"
-                f"level: medium\n"
-                f"logsource:\n  product: windows\ndetection:\n  condition: none\n"
-                f"tags:\n  - attack.{technique_id.lower().replace('.', '_')}\n"
-            )
-            logger.warning("No mock Sigma rule defined for %s — using placeholder.", technique_id)
-
-        data = yaml.safe_load(raw_yaml)
-
-        sigma_rule = SigmaRule(
-            rule_id      = str(data.get("id", uuid.uuid4())),
-            title        = data.get("title", f"Mock Rule for {technique_id}"),
-            description  = data.get("description", ""),
-            technique_id = technique_id,
-            status       = data.get("status", "experimental"),
-            level        = data.get("level", "high"),
-            logsource    = data.get("logsource", {}),
-            detection    = data.get("detection", {}),
-            condition    = data.get("detection", {}).get("condition", ""),
-            raw_yaml     = raw_yaml,
-        )
-
-        logger.info("[MockBlueEngine] Returned hardcoded Sigma rule for %s: '%s'",
-                    technique_id, sigma_rule.title)
-
-        return BlueEngineResult(
-            technique_id      = technique_id,
-            sigma_rule        = sigma_rule,
-            prompt_tokens     = 0,   # no API call
-            completion_tokens = 0,
-        )

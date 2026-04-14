@@ -24,19 +24,24 @@ APP_ENV: str = os.getenv("APP_ENV", "development")
 LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
 # ── Offline Mode ─────────────────────────────────────────────
-# The framework runs fully offline — no API key required.
-DEMO_MODE: bool = True
+# Set DEMO_MODE=true in .env to run without an Anthropic API key.
+DEMO_MODE: bool = os.getenv("DEMO_MODE", "true").lower() == "true"
 
-# ── MITRE ATT&CK Techniques Supported ────────────────────────
-SUPPORTED_TECHNIQUES: list[str] = [
-    "T1059.001",   # PowerShell
-    "T1003.001",   # LSASS Memory Dump
-    "T1547.001",   # Registry Run Keys / Startup Folder
-    "T1055.001",   # DLL Injection (Process Injection)
-    "T1078",       # Valid Accounts (Stolen Credential Logon)
-    "T1082",       # System Information Discovery
-    "T1071.001",   # Application Layer Protocol: Web Protocols (C2 over HTTP/S)
-]
+# ── MITRE ATT&CK Techniques — single source of truth ─────────
+# Both SUPPORTED_TECHNIQUES (health check / validator) and the
+# /techniques endpoint are derived from this one dict, so adding
+# a new technique here automatically updates everything.
+TECHNIQUE_DETAILS: dict = {
+    "T1059.001": {"name": "PowerShell Execution",                      "tactic": "Execution"},
+    "T1003.001": {"name": "LSASS Memory Dump",                         "tactic": "Credential Access"},
+    "T1547.001": {"name": "Registry Run Key Persistence",              "tactic": "Persistence"},
+    "T1055.001": {"name": "DLL Injection",                             "tactic": "Defense Evasion / Privilege Escalation"},
+    "T1078":     {"name": "Valid Accounts",                            "tactic": "Persistence / Initial Access"},
+    "T1082":     {"name": "System Information Discovery",              "tactic": "Discovery"},
+    "T1071.001": {"name": "Application Layer Protocol: Web Protocols", "tactic": "Command and Control"},
+}
+
+SUPPORTED_TECHNIQUES: list[str] = list(TECHNIQUE_DETAILS.keys())
 
 # ── Scoring Thresholds ────────────────────────────────────────
 COVERAGE_THRESHOLD_PASS: float = 0.75   # >= 75% = PASS

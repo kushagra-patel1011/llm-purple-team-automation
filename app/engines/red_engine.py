@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 import random
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.schema.schema import (
     TechniqueID, TelemetryLog, RedEngineResult, LogSource
 )
@@ -21,7 +21,7 @@ USERNAMES = ["CORP\\jsmith", "CORP\\adavis", "CORP\\SimUser", "CORP\\mwilson"]
 
 def _random_time(within_minutes: int = 30) -> datetime:
     offset = random.randint(0, within_minutes * 60)
-    return datetime.utcnow() - timedelta(seconds=offset)
+    return datetime.now(timezone.utc) - timedelta(seconds=offset)
 
 def _pick(lst: list) -> str:
     return random.choice(lst)

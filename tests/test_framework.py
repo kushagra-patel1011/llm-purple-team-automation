@@ -2,13 +2,11 @@
 # Kushagra Patel | Roll No. 2201302012 | Quantum University Roorkee
 # LLM-Driven Purple Team Automation Framework — Unit Tests
 
-# NOTE: I kept these tests focused on the parts I could verify without
-# actually calling the Claude API — that would cost tokens and also
-# make tests slow and non-deterministic. Blue Engine gets mocked.
+# NOTE: Tests cover Schema, Red Engine, Validator, Blue Engine, and Config.
+# The Blue Engine runs fully offline (no API key needed), so no mocking required.
 
 import pytest
 import uuid
-from unittest.mock import MagicMock, patch
 from datetime import datetime
 
 
@@ -277,50 +275,20 @@ class TestValidatorEngine:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# TEST: Blue Engine (Mocked — no real API call)
+# TEST: Blue Engine (offline — no API call needed)
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TestBlueEngineMocked:
+class TestBlueEngine:
     """
-    Test Blue Engine logic without making real Claude API calls.
-    The Anthropic client is mocked to return a fake Sigma YAML response.
+    Test the offline Blue Engine directly.
+    BlueEngine uses hardcoded Sigma rules from mock_blue_engine._SIGMA_RULES,
+    so no Anthropic API key or mocking is required.
     """
 
-    FAKE_SIGMA_YAML = """title: Suspicious PowerShell Encoded Command
-id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-description: Detects PowerShell with encoded commands
-status: experimental
-level: high
-logsource:
-  product: windows
-  service: powershell
-detection:
-  selection:
-    EventID: 4104
-    CommandLine|contains:
-      - '-EncodedCommand'
-      - 'DownloadString'
-  condition: selection
-tags:
-  - attack.execution
-  - attack.t1059.001
-"""
-
-    def _mock_anthropic_response(self):
-        """Build a fake Anthropic API response object."""
-        mock_response = MagicMock()
-        mock_response.content = [MagicMock(text=self.FAKE_SIGMA_YAML)]
-        mock_response.usage.input_tokens = 312
-        mock_response.usage.output_tokens = 148
-        return mock_response
-
-    @patch("app.engines.blue_engine.client")
-    def test_blue_engine_returns_sigma_rule(self, mock_client):
+    def test_blue_engine_returns_sigma_rule_for_powershell(self):
         from app.engines.blue_engine import BlueEngine
         from app.engines.red_engine import RedEngine
         from app.schema.schema import TechniqueID
-
-        mock_client.messages.create.return_value = self._mock_anthropic_response()
 
         red = RedEngine()
         red_result = red.run(TechniqueID.POWERSHELL, log_count=3)
@@ -329,42 +297,38 @@ tags:
         result = blue.run("T1059.001", red_result.logs)
 
         assert result.sigma_rule is not None
-        assert result.sigma_rule.title == "Suspicious PowerShell Encoded Command"
-        assert result.sigma_rule.level == "high"
+        assert result.sigma_rule.title != ""
+        assert result.sigma_rule.level in ["high", "medium", "low", "critical"]
         assert result.sigma_rule.status == "experimental"
 
-    @patch("app.engines.blue_engine.client")
-    def test_blue_engine_records_token_counts(self, mock_client):
+    def test_blue_engine_preserves_technique_id(self):
         from app.engines.blue_engine import BlueEngine
         from app.engines.red_engine import RedEngine
         from app.schema.schema import TechniqueID
 
-        mock_client.messages.create.return_value = self._mock_anthropic_response()
-
         red = RedEngine()
-        red_result = red.run(TechniqueID.POWERSHELL, log_count=3)
+        red_result = red.run(TechniqueID.LSASS_DUMP, log_count=2)
 
         blue = BlueEngine()
-        result = blue.run("T1059.001", red_result.logs)
+        result = blue.run("T1003.001", red_result.logs)
 
-        assert result.prompt_tokens == 312
-        assert result.completion_tokens == 148
+        assert result.technique_id == "T1003.001"
 
-    @patch("app.engines.blue_engine.client")
-    def test_blue_engine_technique_id_is_preserved(self, mock_client):
+    def test_blue_engine_sigma_rule_has_valid_yaml_fields(self):
         from app.engines.blue_engine import BlueEngine
         from app.engines.red_engine import RedEngine
         from app.schema.schema import TechniqueID
 
-        mock_client.messages.create.return_value = self._mock_anthropic_response()
-
         red = RedEngine()
-        red_result = red.run(TechniqueID.POWERSHELL, log_count=3)
+        red_result = red.run(TechniqueID.REGISTRY_PERSIST, log_count=2)
 
         blue = BlueEngine()
-        result = blue.run("T1059.001", red_result.logs)
+        result = blue.run("T1547.001", red_result.logs)
 
-        assert result.technique_id == "T1059.001"
+        # raw_yaml must be non-empty and contain required Sigma fields
+        assert "title:" in result.sigma_rule.raw_yaml
+        assert "detection:" in result.sigma_rule.raw_yaml
+        assert result.sigma_rule.logsource != {}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -387,6 +351,7 @@ class TestConfig:
         assert 0.0 < COVERAGE_THRESHOLD_WARN < 1.0
         assert 0.0 < COVERAGE_THRESHOLD_PASS < 1.0
 
-    def test_max_tokens_is_positive(self):
-        from app.config import MAX_TOKENS
-        assert MAX_TOKENS > 0
+    def test_technique_details_keys_match_supported_techniques(self):
+        # TECHNIQUE_DETAILS and SUPPORTED_TECHNIQUES must stay in sync
+        from app.config import TECHNIQUE_DETAILS, SUPPORTED_TECHNIQUES
+        assert list(TECHNIQUE_DETAILS.keys()) == SUPPORTED_TECHNIQUES

@@ -12,7 +12,7 @@ from app.schema.schema import (
 )
 from app.engines.orchestrator import Orchestrator
 from app.store.artifact_store import ArtifactStore
-from app.config import SUPPORTED_TECHNIQUES, APP_ENV
+from app.config import SUPPORTED_TECHNIQUES, TECHNIQUE_DETAILS, APP_ENV
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,  # Must be False when allow_origins=["*"] — browser will block otherwise
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -74,43 +74,11 @@ def health():
 @app.get("/techniques", tags=["Techniques"])
 def list_techniques():
     """List all supported MITRE ATT&CK techniques."""
+    # Built dynamically from TECHNIQUE_DETAILS in config.py — no manual sync needed.
     return {
         "techniques": [
-            {
-                "id": "T1059.001",
-                "name": "PowerShell Execution",
-                "tactic": "Execution",
-            },
-            {
-                "id": "T1003.001",
-                "name": "LSASS Memory Dump",
-                "tactic": "Credential Access",
-            },
-            {
-                "id": "T1547.001",
-                "name": "Registry Run Key Persistence",
-                "tactic": "Persistence",
-            },
-            {
-                "id": "T1055.001",
-                "name": "DLL Injection",
-                "tactic": "Defense Evasion / Privilege Escalation",
-            },
-            {
-                "id": "T1078",
-                "name": "Valid Accounts",
-                "tactic": "Persistence / Initial Access",
-            },
-            {
-                "id": "T1082",
-                "name": "System Information Discovery",
-                "tactic": "Discovery",
-            },
-            {
-                "id": "T1071.001",
-                "name": "Application Layer Protocol: Web Protocols",
-                "tactic": "Command and Control",
-            },
+            {"id": tid, "name": details["name"], "tactic": details["tactic"]}
+            for tid, details in TECHNIQUE_DETAILS.items()
         ]
     }
 
