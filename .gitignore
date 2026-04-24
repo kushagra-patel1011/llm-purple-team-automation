@@ -5,3 +5,6 @@ __pycache__/
 logs/
 rules_output/
 server.log
+.claude/
+.code-review-graph/
+venv/
