@@ -2,7 +2,7 @@
 
 ### Red-First Architecture | MITRE ATT&CK Mapped | LLM-Powered Detection Engine
 
-**Author:** Kushagra Patel 
+**Author:** Kushagra Patel
 
 ---
 
@@ -101,8 +101,7 @@ Purple Team exercises exist to close this gap, but they require coordinated effo
 | Component | File | Responsibility |
 |---|---|---|
 | Red Engine | `app/engines/red_engine.py` | Simulates attack telemetry for MITRE techniques |
-| Blue Engine | `app/engines/blue_engine.py` | Calls LLM API to generate Sigma detection rules |
-| Mock Blue Engine | `app/engines/mock_blue_engine.py` | Offline fallback with hardcoded Sigma rules (no API key needed) |
+| Blue Engine | `app/engines/blue_engine.py` | Calls LLM API to generate Sigma detection rules; falls back to offline mock rules via `mock_blue_engine.py` when `DEMO_MODE=true` |
 | Validator | `app/engines/validator.py` | Scores Sigma rule coverage against telemetry logs |
 | Orchestrator | `app/engines/orchestrator.py` | Runs the full pipeline in sequence |
 | Schema | `app/schema/schema.py` | Pydantic v2 data models for all pipeline stages |
@@ -138,7 +137,7 @@ PURPLE_TEAM_FRAMEWORK/
 │   │   ├── __init__.py
 │   │   ├── red_engine.py           # Adversary simulation — generates synthetic telemetry
 │   │   ├── blue_engine.py          # LLM API call — generates Sigma rules
-│   │   ├── mock_blue_engine.py     # Offline fallback — hardcoded Sigma rules
+│   │   ├── mock_blue_engine.py     # Offline fallback — hardcoded Sigma rules (DEMO_MODE)
 │   │   ├── orchestrator.py         # Pipeline controller (Red → Blue → Validate)
 │   │   └── validator.py            # Coverage scoring engine
 │   │
@@ -171,7 +170,7 @@ PURPLE_TEAM_FRAMEWORK/
 | Layer | Technology | Purpose |
 |---|---|---|
 | Language | Python 3.11+ | Core framework |
-| API Framework | FastAPI 0.135 | REST server and OpenAPI docs |
+| API Framework | FastAPI | REST server and OpenAPI docs |
 | AI / LLM | Anthropic Claude (claude-sonnet) | Sigma rule generation |
 | Data Validation | Pydantic v2 | Request/response schema enforcement |
 | Detection Format | Sigma | Vendor-neutral detection rule standard |
@@ -195,7 +194,7 @@ For `T1059.001` (PowerShell), it generates Event ID 4104 logs with realistic enc
 
 The Blue Engine takes the top 3 logs from Stage 1 and constructs a structured prompt for the LLM API. The prompt instructs the model to act as a detection engineer and return a valid Sigma YAML rule based on the log indicators.
 
-The engine parses the response, validates the YAML structure, and maps it to a `SigmaRule` Pydantic model. If `DEMO_MODE=true` or no API key is set, the Mock Blue Engine is used instead — it returns hardcoded Sigma rules so the pipeline runs fully offline.
+The engine parses the response, validates the YAML structure, and maps it to a `SigmaRule` Pydantic model. If `DEMO_MODE=true` or no API key is set, `mock_blue_engine.py` is used instead — it returns hardcoded Sigma rules so the pipeline runs fully offline without any API calls.
 
 ### Stage 3: Validator (Coverage Scoring)
 
@@ -251,9 +250,10 @@ APP_ENV=development
 LOG_LEVEL=INFO
 RULES_OUTPUT_DIR=rules_output
 LOGS_DIR=logs
+DEMO_MODE=true
 ```
 
-To run without an API key, set `DEMO_MODE=true` in `.env`. The pipeline will use hardcoded Sigma rules via the Mock Blue Engine.
+> Set `DEMO_MODE=true` to run the full pipeline offline without an API key. The pipeline will use hardcoded Sigma rules via the offline fallback engine.
 
 ---
 
@@ -269,7 +269,7 @@ Server starts at `http://localhost:8000`
 
 ### Access the Dashboard
 
-Open `dashboard.html` in a browser. Ensure the API server is running first.
+Open `dashboard.html` in a browser **after** the API server is running. Opening the file directly without a running server will show "API offline".
 
 ### Access API Documentation
 
@@ -382,8 +382,8 @@ Writing Sigma rules manually for each technique requires a detection engineer wh
 **Why simulate logs instead of using real ones?**
 Using real attack logs would require executing actual malicious tools in a controlled lab environment, which is outside the scope of this project. Simulation using known IOC patterns from public threat intelligence (Mimikatz signatures, PowerShell cradle patterns) produces logs that are structurally identical to real ones from the perspective of a Sigma rule.
 
-**Why is there a Mock Blue Engine?**
-The Mock Blue Engine allows the entire pipeline to run offline without an API key. This is used for academic demonstrations, testing, and environments where live API calls are not available. It is toggled via `DEMO_MODE=true` in the `.env` file.
+**Why is there an offline fallback engine?**
+The offline fallback (`mock_blue_engine.py`) allows the entire pipeline to run without an API key. This is used for academic demonstrations, testing, and environments where live API calls are not available. It is toggled via `DEMO_MODE=true` in the `.env` file.
 
 **Why is `rules_output/` excluded from version control?**
 These are generated pipeline artifacts, not source code. Committing them would misrepresent them as static authored rules rather than dynamic output of the pipeline. The directory is created at runtime.
@@ -416,8 +416,6 @@ These are generated pipeline artifacts, not source code. Committing them would m
 5. FastAPI Documentation — https://fastapi.tiangolo.com/
 6. Sysmon Event ID Reference — https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
 7. Windows Security Event Log Reference — https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/
-8. Thomas, S. et al. (2023). "Automating Threat Detection with Large Language Models." *IEEE Security & Privacy.*
-9. Shin, R. et al. (2024). "LLM-Assisted Detection Rule Generation for SIEM Platforms." *USENIX Security Symposium.*
 
 ---
 
