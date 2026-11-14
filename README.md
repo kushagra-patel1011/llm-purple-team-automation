@@ -1,8 +1,10 @@
-# LLM-Driven Purple Team Automation Framework
+# Purple Team Automation Framework
 
-### Red-First Architecture | MITRE ATT&CK Mapped | LLM-Powered Detection Engine
+### Simulated Attack Telemetry | MITRE ATT&CK Mapped | Sigma Rule Coverage Scoring
 
 **Author:** Kushagra Patel
+
+> **Status.** The first design of this project used an LLM to write the Sigma rule for each run. The current code does not call an LLM. The Blue Engine returns one pre-written Sigma rule per technique and the whole pipeline runs offline. LLM generation is listed under future work.
 
 ---
 
@@ -39,11 +41,11 @@
 
 ## 1. Project Overview
 
-This project implements an **LLM-driven Purple Team Automation Framework** that bridges the gap between adversary simulation (Red Team) and detection engineering (Blue Team) using a fully automated pipeline.
+This project implements a **Purple Team Automation Framework** that connects adversary simulation (Red Team) and detection engineering (Blue Team) in one automated pipeline.
 
-The framework simulates cyberattacks mapped to MITRE ATT&CK techniques, feeds the resulting telemetry into a large language model to auto-generate Sigma detection rules, and then scores those rules against the simulated logs to measure detection coverage — all in a single API call.
+The framework simulates attack telemetry for seven MITRE ATT&CK techniques, pairs each technique with a pre-written Sigma detection rule, and then scores that rule against the simulated logs to measure detection coverage — all in a single API call.
 
-**Core Idea:** A traditional Purple Team exercise requires manual effort from both Red and Blue teams working together. This framework automates the repetitive parts of that cycle — log generation, rule authoring, and coverage validation — reducing a process that typically takes hours to under 30 seconds.
+**Core Idea:** A traditional Purple Team exercise requires manual effort from both Red and Blue teams working together. This framework automates the repeatable parts of that cycle — log generation, rule lookup and coverage validation — so one run completes in seconds and produces the same documented result every time.
 
 ---
 
@@ -55,7 +57,7 @@ Purple Team exercises exist to close this gap, but they require coordinated effo
 
 **This framework addresses:**
 - The manual overhead of simulating attack telemetry for detection testing
-- The bottleneck of writing Sigma rules by hand for each technique
+- Keeping a Sigma rule next to the telemetry it is meant to catch, for each technique
 - The lack of automated feedback on whether a detection rule actually works
 - The absence of a repeatable, documented pipeline for Purple Team operations
 
@@ -70,9 +72,9 @@ Purple Team exercises exist to close this gap, but they require coordinated effo
 │  ┌──────────────┐     ┌──────────────┐     ┌────────────────┐  │
 │  │  RED ENGINE  │────▶│ BLUE ENGINE  │────▶│   VALIDATOR    │  │
 │  │              │     │              │     │                │  │
-│  │  Adversary   │     │  LLM-Powered │     │  Coverage      │  │
+│  │  Adversary   │     │  Pre-written │     │  Coverage      │  │
 │  │  Simulation  │     │  Sigma Rule  │     │  Scoring       │  │
-│  │  (T-Codes)   │     │  Generation  │     │  PASS/WARN/FAIL│  │
+│  │  (T-Codes)   │     │  Lookup      │     │  PASS/WARN/FAIL│  │
 │  └──────────────┘     └──────────────┘     └────────────────┘  │
 │         │                    │                      │           │
 │         └────────────────────┴──────────────────────┘          │
@@ -101,7 +103,7 @@ Purple Team exercises exist to close this gap, but they require coordinated effo
 | Component | File | Responsibility |
 |---|---|---|
 | Red Engine | `app/engines/red_engine.py` | Simulates attack telemetry for MITRE techniques |
-| Blue Engine | `app/engines/blue_engine.py` | Calls LLM API to generate Sigma detection rules; falls back to offline mock rules via `mock_blue_engine.py` when `DEMO_MODE=true` |
+| Blue Engine | `app/engines/blue_engine.py` | Returns the pre-written Sigma rule for the technique and parses it into a `SigmaRule` model. The rules live in `mock_blue_engine.py`. No API is called |
 | Validator | `app/engines/validator.py` | Scores Sigma rule coverage against telemetry logs |
 | Orchestrator | `app/engines/orchestrator.py` | Runs the full pipeline in sequence |
 | Schema | `app/schema/schema.py` | Pydantic v2 data models for all pipeline stages |
@@ -136,8 +138,8 @@ PURPLE_TEAM_FRAMEWORK/
 │   ├── engines/
 │   │   ├── __init__.py
 │   │   ├── red_engine.py           # Adversary simulation — generates synthetic telemetry
-│   │   ├── blue_engine.py          # LLM API call — generates Sigma rules
-│   │   ├── mock_blue_engine.py     # Offline fallback — hardcoded Sigma rules (DEMO_MODE)
+│   │   ├── blue_engine.py          # Looks up and parses the Sigma rule for a technique
+│   │   ├── mock_blue_engine.py     # The pre-written Sigma rules, one per technique
 │   │   ├── orchestrator.py         # Pipeline controller (Red → Blue → Validate)
 │   │   └── validator.py            # Coverage scoring engine
 │   │
@@ -158,7 +160,7 @@ PURPLE_TEAM_FRAMEWORK/
 ├── dashboard.html                  # Browser-based monitoring dashboard
 ├── requirements.txt                # Python dependencies
 ├── .env.example                    # Environment variable template
-├── .env                            # API keys (NOT committed to repo)
+├── .env                            # Local settings (NOT committed to repo)
 ├── .gitignore
 └── README.md
 ```
@@ -171,10 +173,9 @@ PURPLE_TEAM_FRAMEWORK/
 |---|---|---|
 | Language | Python 3.11+ | Core framework |
 | API Framework | FastAPI | REST server and OpenAPI docs |
-| AI / LLM | Anthropic Claude (claude-sonnet) | Sigma rule generation |
 | Data Validation | Pydantic v2 | Request/response schema enforcement |
 | Detection Format | Sigma | Vendor-neutral detection rule standard |
-| YAML Parsing | PyYAML | Parsing LLM Sigma output |
+| YAML Parsing | PyYAML | Parsing the Sigma rules |
 | Frontend | HTML / Vanilla JS | Dashboard (no framework dependency) |
 | Server | Uvicorn | ASGI server for FastAPI |
 | Testing | pytest | Unit tests |
@@ -190,11 +191,11 @@ The Red Engine accepts a MITRE ATT&CK technique ID and generates `N` synthetic W
 
 For `T1059.001` (PowerShell), it generates Event ID 4104 logs with realistic encoded commands and download cradles. For `T1003.001` (LSASS), it generates Sysmon Event ID 10 (process access) logs targeting `lsass.exe` with known tool names like `mimikatz.exe` and `procdump.exe`. All 7 techniques follow the same pattern, each with technique-specific field values drawn from real-world threat intelligence.
 
-### Stage 2: Blue Engine (LLM-Powered Detection)
+### Stage 2: Blue Engine (Sigma Rule Lookup)
 
-The Blue Engine takes the top 3 logs from Stage 1 and constructs a structured prompt for the LLM API. The prompt instructs the model to act as a detection engineer and return a valid Sigma YAML rule based on the log indicators.
+The Blue Engine looks up the Sigma rule written for the requested technique. The seven rules are stored as YAML in `mock_blue_engine.py`, keyed by MITRE ATT&CK technique ID.
 
-The engine parses the response, validates the YAML structure, and maps it to a `SigmaRule` Pydantic model. If `DEMO_MODE=true` or no API key is set, `mock_blue_engine.py` is used instead — it returns hardcoded Sigma rules so the pipeline runs fully offline without any API calls.
+The engine parses the YAML, validates its structure, and maps it to a `SigmaRule` Pydantic model. A technique with no rule gets a clearly labelled placeholder. Nothing is sent to an external service, so the pipeline runs fully offline.
 
 ### Stage 3: Validator (Coverage Scoring)
 
@@ -216,7 +217,7 @@ If `save_artifacts: true`, the full pipeline result is written as a JSON file to
 ### Prerequisites
 
 - Python 3.11 or higher
-- Anthropic API key ([get one here](https://console.anthropic.com/)) — optional if using DEMO_MODE
+- No API key is needed
 
 ### Installation
 
@@ -239,21 +240,18 @@ pip install -r requirements.txt
 
 # 4. Configure environment
 cp .env.example .env
-# Open .env and add your ANTHROPIC_API_KEY
 ```
 
 ### .env File
 
 ```
-ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxx
 APP_ENV=development
 LOG_LEVEL=INFO
 RULES_OUTPUT_DIR=rules_output
 LOGS_DIR=logs
-DEMO_MODE=true
 ```
 
-> Set `DEMO_MODE=true` to run the full pipeline offline without an API key. The pipeline will use hardcoded Sigma rules via the offline fallback engine.
+> The pipeline runs fully offline. It uses the pre-written Sigma rules and makes no external calls.
 
 ---
 
@@ -325,7 +323,7 @@ The HTML dashboard (`dashboard.html`) provides a browser-based interface to:
 - Select a MITRE ATT&CK technique from all 7 supported options
 - Set the number of telemetry logs to generate (1–50)
 - Trigger the full pipeline with a single button
-- View the generated Sigma rule with syntax highlighting
+- View the Sigma rule with syntax highlighting
 - See coverage score and PASS/WARN/FAIL status
 - Browse pipeline run history
 
@@ -376,17 +374,14 @@ Status          : PASS
 **Why Sigma and not YARA or Snort?**
 Sigma is the vendor-neutral standard for SIEM detection rules. It can be compiled to Splunk SPL, Elastic EQL, Microsoft Sentinel KQL, and others. Generating Sigma means the output is immediately usable in a real SOC environment without modification.
 
-**Why an LLM for rule generation?**
-Writing Sigma rules manually for each technique requires a detection engineer who understands both the attack behaviour and the SIEM field schema. An LLM can be prompted to perform this translation automatically given log samples, removing the human bottleneck in the Blue Team stage of a Purple Team exercise.
+**Why are the rules pre-written instead of generated by an LLM?**
+The first design prompted an LLM with sample logs and asked it for a Sigma rule. The current version uses one pre-written rule per technique. This makes every run repeatable and removes the need for an API key. Generating rules with an LLM would be an optional extra stage, and its output would still need checking against rules like these.
 
 **Why simulate logs instead of using real ones?**
 Using real attack logs would require executing actual malicious tools in a controlled lab environment, which is outside the scope of this project. Simulation using known IOC patterns from public threat intelligence (Mimikatz signatures, PowerShell cradle patterns) produces logs that are structurally identical to real ones from the perspective of a Sigma rule.
 
-**Why is there an offline fallback engine?**
-The offline fallback (`mock_blue_engine.py`) allows the entire pipeline to run without an API key. This is used for academic demonstrations, testing, and environments where live API calls are not available. It is toggled via `DEMO_MODE=true` in the `.env` file.
-
 **Why is `rules_output/` excluded from version control?**
-These are generated pipeline artifacts, not source code. Committing them would misrepresent them as static authored rules rather than dynamic output of the pipeline. The directory is created at runtime.
+These are pipeline artifacts written on each run, not source code. The directory is created at runtime.
 
 ---
 
@@ -394,13 +389,15 @@ These are generated pipeline artifacts, not source code. Committing them would m
 
 **Current Limitations:**
 - Red Engine generates synthetic logs; it does not interface with real Windows event infrastructure
-- Blue Engine sends only 3 sample logs to the LLM due to context window constraints
+- Blue Engine does not generate rules. It returns one pre-written rule per technique, for seven techniques
+- The rules and the simulated logs are built from the same known indicators, so coverage scores are optimistic. A PASS shows the pipeline works end to end, not that the rule would catch a real attack
 - Validator models Sigma `contains` behaviour only — does not account for `not` conditions or multi-selection logic
 - No authentication on the FastAPI server (development only)
 
 **Planned Extensions:**
 - Integrate with Elastic Stack to deploy generated Sigma rules directly into a real SIEM
-- Add LLM feedback loop: if Validator returns FAIL, automatically re-prompt with failure context for rule refinement
+- Add an optional LLM stage that drafts a Sigma rule from the telemetry, with the Validator result fed back for refinement
+- Score rules against logs that were not written alongside them
 - Replace synthetic log generation with Atomic Red Team test output via subprocess integration
 - Add multi-technique chaining to simulate kill chain sequences
 - Add TAXII/STIX export for threat intelligence sharing
@@ -411,11 +408,10 @@ These are generated pipeline artifacts, not source code. Committing them would m
 
 1. MITRE ATT&CK Framework — https://attack.mitre.org/
 2. Sigma Rule Specification — https://github.com/SigmaHQ/sigma
-3. Anthropic Claude API Documentation — https://docs.anthropic.com/
-4. Pydantic v2 Documentation — https://docs.pydantic.dev/
-5. FastAPI Documentation — https://fastapi.tiangolo.com/
-6. Sysmon Event ID Reference — https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
-7. Windows Security Event Log Reference — https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/
+3. Pydantic v2 Documentation — https://docs.pydantic.dev/
+4. FastAPI Documentation — https://fastapi.tiangolo.com/
+5. Sysmon Event ID Reference — https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
+6. Windows Security Event Log Reference — https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/
 
 ---
 
